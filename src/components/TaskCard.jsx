@@ -2,23 +2,21 @@ import { useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 
 const PRIORITIES = {
-  low:    { label: 'Low',    color: '#38a169', bg: '#f0fff4' },
-  medium: { label: 'Medium', color: '#d69e2e', bg: '#fffff0' },
-  high:   { label: 'High',   color: '#e53e3e', bg: '#fff5f5' },
+  low:    { label: 'Low',    color: '#43e97b', bg: 'rgba(67, 233, 123, 0.1)' },
+  medium: { label: 'Medium', color: '#f9ca24', bg: 'rgba(249, 202, 36, 0.1)' },
+  high:   { label: 'High',   color: '#ff6b6b', bg: 'rgba(255, 107, 107, 0.1)' },
 }
 
-// Check if a due date is overdue
 function isOverdue(dueDate) {
   if (!dueDate) return false
   const today = new Date()
-  today.setHours(0, 0, 0, 0) // strip time, compare dates only
+  today.setHours(0, 0, 0, 0)
   return new Date(dueDate) < today
 }
 
-// Format date nicely: "May 10" instead of "2026-05-10"
 function formatDate(dueDate) {
   if (!dueDate) return null
-  const date = new Date(dueDate + 'T00:00:00') // force local time
+  const date = new Date(dueDate + 'T00:00:00')
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
@@ -26,6 +24,7 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(task.title)
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   function handleSave() {
     if (!editValue.trim()) return
@@ -57,19 +56,26 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
           style={{
             ...styles.card,
-            borderLeft: overdue ? '3px solid #e53e3e' : '3px solid transparent',
+            borderColor: overdue
+              ? 'rgba(255,107,107,0.4)'
+              : hovered
+              ? '#3a3f55'
+              : '#2d3148',
             boxShadow: snapshot.isDragging
-              ? '0 8px 16px rgba(0,0,0,0.15)'
-              : '0 1px 3px rgba(0,0,0,0.1)',
-            transform: snapshot.isDragging ? 'rotate(2deg)' : 'rotate(0deg)',
+              ? '0 16px 40px rgba(0,0,0,0.5)'
+              : hovered
+              ? '0 4px 20px rgba(102,126,234,0.15)'
+              : '0 2px 8px rgba(0,0,0,0.2)',
+            transform: snapshot.isDragging ? 'rotate(2deg) scale(1.02)' : 'rotate(0deg) scale(1)',
+            transition: snapshot.isDragging ? 'none' : 'all 0.2s ease',
             ...provided.draggableProps.style,
           }}
         >
           <div style={styles.cardBody}>
-
-            {/* Task title — click to edit */}
             {isEditing ? (
               <input
                 autoFocus
@@ -89,7 +95,6 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
               </p>
             )}
 
-            {/* Footer: priority badge + due date */}
             <div style={styles.footer}>
               <span
                 style={{
@@ -100,10 +105,9 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
                 onClick={cyclePriority}
                 title="Click to change priority"
               >
-                {priority.label}
+                ● {priority.label}
               </span>
 
-              {/* Due date display or picker */}
               {showDatePicker ? (
                 <input
                   type="date"
@@ -120,20 +124,27 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
                 <span
                   style={{
                     ...styles.dateLabel,
-                    color: overdue ? '#e53e3e' : '#718096',
+                    color: overdue ? '#ff6b6b' : '#4a5568',
                     fontWeight: overdue ? '600' : '400',
                   }}
                   onClick={() => setShowDatePicker(true)}
                   title="Click to set due date"
                 >
-                  {task.dueDate ? formatDate(task.dueDate) : '+ date'}
+                  {task.dueDate ? (overdue ? '⚠ ' : '📅 ') + formatDate(task.dueDate) : '+ date'}
                 </span>
               )}
             </div>
-
           </div>
 
-          <button style={styles.deleteBtn} onClick={onDelete}>✕</button>
+          <button
+            style={{
+              ...styles.deleteBtn,
+              opacity: hovered ? 1 : 0,
+            }}
+            onClick={onDelete}
+          >
+            ✕
+          </button>
         </div>
       )}
     </Draggable>
@@ -142,72 +153,79 @@ function TaskCard({ task, index, onDelete, onEdit, onPriorityChange, onDueDateCh
 
 const styles = {
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: '6px',
-    padding: '0.75rem 1rem',
+    backgroundColor: '#1e2130',
+    borderRadius: '12px',
+    padding: '1rem',
     cursor: 'grab',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    transition: 'box-shadow 0.2s ease',
+    border: '1px solid #2d3148',
   },
   cardBody: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '8px',
   },
   title: {
     margin: 0,
     fontSize: '0.9rem',
-    color: '#2d3748',
+    color: '#e2e8f0',
     cursor: 'text',
     wordBreak: 'break-word',
+    lineHeight: '1.4',
   },
   input: {
     fontSize: '0.9rem',
-    color: '#2d3748',
+    color: '#e2e8f0',
     border: 'none',
     outline: '2px solid #667eea',
-    borderRadius: '4px',
+    borderRadius: '6px',
     padding: '4px 6px',
     width: '100%',
+    backgroundColor: '#2d3148',
   },
   footer: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '8px',
+    flexWrap: 'wrap',
   },
   badge: {
     fontSize: '0.7rem',
     fontWeight: '600',
-    padding: '2px 8px',
+    padding: '3px 8px',
     borderRadius: '999px',
     cursor: 'pointer',
     userSelect: 'none',
+    letterSpacing: '0.02em',
   },
   dateLabel: {
     fontSize: '0.75rem',
     cursor: 'pointer',
     userSelect: 'none',
+    transition: 'color 0.2s ease',
   },
   dateInput: {
     fontSize: '0.75rem',
-    border: '1px solid #cbd5e0',
-    borderRadius: '4px',
-    padding: '2px 4px',
+    border: '1px solid #3a3f55',
+    borderRadius: '6px',
+    padding: '2px 6px',
     outline: 'none',
-    color: '#2d3748',
+    color: '#e2e8f0',
+    backgroundColor: '#2d3148',
   },
   deleteBtn: {
     background: 'none',
     border: 'none',
-    color: '#a0aec0',
+    color: '#ff6b6b',
     cursor: 'pointer',
     fontSize: '0.8rem',
     padding: '2px 4px',
     flexShrink: 0,
     marginLeft: '6px',
+    transition: 'opacity 0.2s ease',
   },
 }
 

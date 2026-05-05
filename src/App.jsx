@@ -109,6 +109,7 @@ function App() {
   return (
     <div style={styles.board}>
       <h1 style={styles.title}>TaskFlow</h1>
+      <p style={styles.subtitle}>Your personal productivity board</p>
 
       <div style={styles.form}>
         <input
@@ -162,41 +163,59 @@ function App() {
 const styles = {
   board: {
     minHeight: '100vh',
-    backgroundColor: '#f0f4f8',
+    background: 'linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #0f1117 100%)',
     padding: '2rem',
-    fontFamily: 'sans-serif',
+    fontFamily: "'Inter', 'Segoe UI', sans-serif",
   },
   title: {
     textAlign: 'center',
-    marginBottom: '1.5rem',
-    color: '#1a202c',
+    marginBottom: '0.25rem',
+    fontSize: '2rem',
+    fontWeight: '700',
+    background: 'linear-gradient(90deg, #667eea, #764ba2, #f093fb)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    letterSpacing: '-0.5px',
+  },
+  subtitle: {
+    textAlign: 'center',
+    fontSize: '0.85rem',
+    color: '#4a5568',
+    marginBottom: '2rem',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
   },
   form: {
     display: 'flex',
     justifyContent: 'center',
     gap: '8px',
-    marginBottom: '2rem',
+    marginBottom: '2.5rem',
   },
   input: {
-    padding: '0.6rem 1rem',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e0',
+    padding: '0.7rem 1.2rem',
+    borderRadius: '10px',
+    border: '1px solid #2d3148',
     fontSize: '0.9rem',
-    width: '280px',
+    width: '300px',
     outline: 'none',
+    backgroundColor: '#1a1d27',
+    color: '#e2e8f0',
+    transition: 'border 0.2s ease',
   },
   button: {
-    padding: '0.6rem 1.2rem',
-    backgroundColor: '#4a5568',
+    padding: '0.7rem 1.4rem',
+    background: 'linear-gradient(135deg, #667eea, #764ba2)',
     color: '#fff',
     border: 'none',
-    borderRadius: '6px',
+    borderRadius: '10px',
     cursor: 'pointer',
     fontSize: '0.9rem',
+    fontWeight: '600',
+    transition: 'opacity 0.2s ease',
   },
   columns: {
     display: 'flex',
-    gap: '1rem',
+    gap: '1.25rem',
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
